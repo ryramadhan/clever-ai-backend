@@ -1,105 +1,135 @@
-# MoodWrite AI
+# 🖤 MoodWrite AI Backend
 
-Monochrome **AI Mood Caption Generator** untuk portfolio: generate caption aesthetic berdasarkan mood (dan input opsional), lalu simpan ke PostgreSQL.
+REST API untuk AI Mood Caption Generator. Generate caption aesthetic berdasarkan mood dengan AI (Google Gemini) + fallback mock, simpan ke PostgreSQL.
 
-## Highlights
+## 🧰 Tech Stack
 
-- **Monochrome UI**: minimal, modern, responsive (mobile & desktop)
-- **Smooth UX**: loading state, typing effect, copy button, animation halus
-- **Persistence**: history dari database (bukan localStorage)
-- **Production-like**: bisa jalan fullstack dengan 1 command, dan bisa serve frontend build dari Express
+| Layer | Technology |
+|-------|------------|
+| Runtime | Node.js 18+ |
+| Framework | Express.js |
+| Database | PostgreSQL (Neon) |
+| AI | Google Gemini API |
+| Deploy | Vercel |
 
-## Tech Stack
+## 🌐 API Endpoints
 
-- **Frontend**: React (Vite)
-- **Backend**: Node.js + Express
-- **Database**: PostgreSQL
-- **AI Provider**: Google Gemini (jika quota tersedia) dengan **mock fallback** saat quota/billing tidak tersedia
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Health check |
+| POST | `/api/generate` | Generate caption (rate limited: 20/min) |
+| GET | `/api/captions?limit=20&offset=0` | List caption history |
 
-## Project Structure
+### POST /api/generate
 
-- `frontend/` — UI (React + Vite)
-- `backend/` — API (Express) + DB (PostgreSQL)
+**Request:**
+```json
+{
+  "mood": "malam",
+  "text": "tentang kehilangan"
+}
+```
 
-## Requirements
+**Response:**
+```json
+{
+  "result": "Malam selalu tahu cara menenangkan...",
+  "provider": "gemini",
+  "mood": "malam",
+  "latency": 1200
+}
+```
 
-- Node.js 18+ (direkomendasikan terbaru)
-- PostgreSQL (via pgAdmin/psql)
+**Supported moods:** `sunyi`, `malam`, `nostalgia`, `kehilangan`, `tenang`
 
-## Setup
-
-### Install dependencies
+## 🚀 Setup Local
 
 ```bash
 npm install
-npm --prefix backend install
-npm --prefix frontend install
 ```
 
-### Database
-
-1. Buat database (contoh: `moodwrite_db`)
-2. Jalankan schema:
+### 🔧 Environment Variables
 
 ```bash
-psql "postgres://DB_USER:DB_PASSWORD@DB_HOST:DB_PORT/DB_NAME" -f backend/sql/schema.sql
-```
-
-### Backend env
-
-Buat `backend/.env` dari template:
-
-```bash
-cd backend
 cp .env.example .env
 ```
 
-Isi minimal:
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | Neon PostgreSQL connection string |
+| `GEMINI_API_KEY` | Google Gemini API key |
+| `GEMINI_MODEL` | Model (default: `gemini-1.5-flash-latest`) |
+| `AI_FALLBACK_MOCK` | Fallback ke mock jika quota habis (default: `true`) |
 
-- DB: `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `DB_NAME`
-- AI:
-  - `AI_PROVIDER=gemini`
-  - `GEMINI_API_KEY=...`
-  - `GEMINI_MODEL=gemini-1.5-flash-latest`
-  - `AI_FALLBACK_MOCK=true`
+### 🗄️ Database Schema
 
-## Run (dev)
+```bash
+psql "$DATABASE_URL" -f sql/schema.sql
+```
 
-Dari root:
+### ▶️ Run Dev
 
 ```bash
 npm run dev
 ```
 
-Frontend: `http://localhost:5173`  
-Backend: `http://localhost:4000`
+## ☁️ Deployment (Vercel)
 
-## Run (production-like / single server)
+### 1. Vercel Project Settings
 
-Build frontend lalu serve dari Express:
+- **Framework Preset:** Other
+- **Build Command:** (none)
+- **Output Directory:** (none)
+- **Install Command:** `npm install`
 
-```bash
-npm run start:prod
+### 2. Environment Variables
+
+Add di Vercel Dashboard → Settings → Environment Variables:
+
+```
+DATABASE_URL=postgresql://...
+GEMINI_API_KEY=...
+AI_FALLBACK_MOCK=true
 ```
 
-Buka: `http://localhost:4000`
+### 3. Database (Neon)
 
-## API
+1. Buat project di [Neon](https://neon.tech)
+2. Copy connection string ke `DATABASE_URL`
+3. Jalankan schema:
+   ```bash
+   psql "$DATABASE_URL" -f sql/schema.sql
+   ```
 
-- `POST /api/generate`
+## 🏗️ Architecture
 
-Request:
-
-```json
-{ "mood": "malam", "text": "tentang kehilangan" }
+```
+┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+│   Vercel    │──────▶   Vercel    │──────▶    Neon     │
+│  Frontend   │      │   Backend   │      │  PostgreSQL │
+└─────────────┘      └─────────────┘      └─────────────┘
 ```
 
-Response:
+## ✨ Features
 
-```json
-{ "result": "...", "provider": "gemini", "mood": "malam", "latency": 1200 }
+- **Rate limiting:** 20 requests/minute per endpoint
+- **AI fallback:** Auto-switch ke mock captions jika Gemini quota habis
+- **Multi-model retry:** Fallback antar model Gemini jika error
+- **Input validation:** Strict mood validation + sanitization
+- **Security:** Helmet, CORS, SSL-ready PostgreSQL
+
+## 📁 Project Structure
+
+```
+src/
+├── controllers/     # Request handlers
+├── routes/          # Route definitions + middleware
+├── services/        # Business logic (AI, DB, captions)
+├── utils/           # Helpers (asyncHandler)
+sql/
+└── schema.sql       # Database schema
 ```
 
-- `GET /api/captions?limit=20&offset=0` → history dari database
+## 🔗 Related
 
-
+- [moodwrite-ai-frontend](https://github.com/ryramadhan/moodwrite-ai-frontend) — React frontend
