@@ -1,25 +1,25 @@
 const BANK = {
-  sunyi: [
+  lonely: [
     "Hari ini sunyi, tapi tidak kosong.",
     "Ada jeda yang pelan, dan aku akhirnya mendengar diri sendiri.",
     "Tidak ramai, hanya cukup untuk bernapas.",
   ],
-  malam: [
+  night: [
     "Malam selalu tahu cara menenangkan yang berisik di kepala.",
     "Lampu kota redup, pikiranku ikut pelan.",
     "Di gelap yang tenang, semuanya terasa lebih jujur.",
   ],
-  nostalgia: [
+  nostalgic: [
     "Beberapa kenangan datang tanpa mengetuk.",
     "Aku tidak kembali ke masa lalu, hanya menyapanya sebentar.",
     "Yang jauh tetap hangat, meski tidak lagi sama.",
   ],
-  kehilangan: [
+  lost: [
     "Ada yang hilang, tapi pelan-pelan aku belajar tetap utuh.",
     "Rasa ini belum selesai, tapi aku tidak lagi lari.",
     "Yang pergi tetap tinggal, dalam cara yang berbeda.",
   ],
-  tenang: [
+  calm: [
     "Hari ini biasa saja, dan itu cukup menenangkan.",
     "Tidak semua hal harus dikejar sekarang.",
     "Pelan bukan berarti tertinggal.",

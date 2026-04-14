@@ -2,11 +2,11 @@ const { generateCaptionAny } = require("../services/ai");
 const { insertCaption } = require("../services/captionsService");
 
 const ALLOWED_MOODS = new Set([
-  "sunyi",
-  "malam",
-  "nostalgia",
-  "kehilangan",
-  "tenang",
+  "lonely",
+  "night",
+  "nostalgic",
+  "lost",
+  "calm",
 ]);
 
 function badRequest(message) {
@@ -24,7 +24,7 @@ async function generate(req, res) {
   const normalizedMood = mood.trim().toLowerCase();
   if (!ALLOWED_MOODS.has(normalizedMood)) {
     throw badRequest(
-      "Invalid mood. Allowed: sunyi, malam, nostalgia, kehilangan, tenang"
+      "Invalid mood. Allowed: lonely, night, nostalgic, lost, calm"
     );
   }
 
