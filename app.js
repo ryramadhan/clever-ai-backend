@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -19,21 +18,8 @@ app.get("/health", (_req, res) => {
 });
 
 const apiRoutes = require("./src/routes/generateRoutes");
-// Backwards-compatible (no prefix)
-app.use(apiRoutes);
-// Production-friendly prefix (matches frontend default: /api)
 app.use("/api", apiRoutes);
-
-// Serve frontend build in production-like mode
-const frontendDistPath = path.resolve(__dirname, "..", "frontend", "dist");
-app.use(express.static(frontendDistPath));
-// Express v5 doesn't accept "*" as a path; use a regex instead.
-// This serves SPA routes while keeping API routes intact.
-app.get(/^(?!\/(api|generate|captions)\b).*/, (req, res, next) => {
-  // If the request isn't for HTML (e.g. asset), let static middleware handle it.
-  if (path.extname(req.path)) return next();
-  res.sendFile(path.join(frontendDistPath, "index.html"));
-});
+app.use(apiRoutes);
 
 // Centralized error handler
 // eslint-disable-next-line no-unused-vars
@@ -53,13 +39,7 @@ app.use((err, _req, res, _next) => {
   });
 });
 
-// For local development
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-  const PORT = process.env.PORT || 4000;
-  app.listen(PORT, () => {
-    console.log(`Backend listening on :${PORT}`);
-  });
-}
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`API running on :${PORT}`));
 
-// Export for Vercel serverless
 module.exports = app;
