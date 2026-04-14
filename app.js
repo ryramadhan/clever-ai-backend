@@ -53,9 +53,13 @@ app.use((err, _req, res, _next) => {
   });
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Backend listening on :${PORT}`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () => {
+    console.log(`Backend listening on :${PORT}`);
+  });
+}
 
+// Export for Vercel serverless
+module.exports = app;

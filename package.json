@@ -1,20 +1,31 @@
 {
-  "name": "moodwrite-ai",
+  "name": "moodwrite-backend",
   "version": "1.0.0",
-  "description": "AI Mood Caption Generator (portfolio project).",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "dev": "concurrently -n backend,frontend -c red,cyan \"npm:dev:backend\" \"npm:dev:frontend\"",
-    "dev:backend": "npm --prefix backend run dev",
-    "dev:frontend": "npm --prefix frontend run dev",
-    "build": "npm --prefix frontend run build",
-    "start:prod": "npm run build && npm start",
-    "start": "npm --prefix backend start"
+    "dev": "nodemon app.js",
+    "start": "node app.js"
   },
-  "keywords": [],
+  "keywords": [
+    "ai",
+    "caption",
+    "mood",
+    "express",
+    "postgresql"
+  ],
   "author": "",
   "license": "ISC",
+  "description": "MoodWrite AI Backend API - Express + PostgreSQL + Gemini AI",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "helmet": "^8.1.0",
+    "pg": "^8.20.0"
+  },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "nodemon": "^3.1.14"
   }
 }
