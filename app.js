@@ -3,6 +3,15 @@ const cors = require("cors");
 const helmet = require("helmet");
 require("dotenv").config();
 
+// Strict env validation at startup
+const requiredEnv = ["GEMINI_API_KEY"];
+const missing = requiredEnv.filter((key) => !process.env[key]);
+if (missing.length > 0) {
+  // eslint-disable-next-line no-console
+  console.error(`[FATAL] Missing required environment variables: ${missing.join(", ")}`);
+  process.exit(1);
+}
+
 const app = express();
 
 app.use(

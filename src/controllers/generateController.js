@@ -15,6 +15,15 @@ function badRequest(message) {
   return err;
 }
 
+// sanitize text input - remove potential harmful chars, limit length
+function sanitizeText(text) {
+  if (!text || typeof text !== "string") return "";
+  return text
+    .replace(/[<>"']/g, "")
+    .trim()
+    .slice(0, 500);
+}
+
 async function generate(req, res) {
   const { mood, text } = req.body ?? {};
 
@@ -33,15 +42,16 @@ async function generate(req, res) {
   }
 
   const startedAt = Date.now();
+  const sanitizedText = sanitizeText(text);
   const { result, provider } = await generateCaptionAny({
     mood: normalizedMood,
-    text,
+    text: sanitizedText,
   });
   const latency = Date.now() - startedAt;
 
   await insertCaption({
     mood: normalizedMood,
-    inputText: typeof text === "string" ? text.trim() : null,
+    inputText: sanitizedText || null,
     result,
   });
 
