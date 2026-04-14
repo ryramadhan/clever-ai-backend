@@ -82,7 +82,19 @@ npm run dev
 - **Output Directory:** (none)
 - **Install Command:** `npm install`
 
-### 2. Environment Variables
+### 2. Vercel.json
+
+File `vercel.json` sudah tersedia:
+
+```json
+{
+  "version": 2,
+  "builds": [{ "src": "api/index.js", "use": "@vercel/node" }],
+  "routes": [{ "src": "/(.*)", "dest": "/api/index.js" }]
+}
+```
+
+### 3. Environment Variables
 
 Add di Vercel Dashboard → Settings → Environment Variables:
 
@@ -92,7 +104,7 @@ GEMINI_API_KEY=...
 AI_FALLBACK_MOCK=true
 ```
 
-### 3. Database (Neon)
+### 4. Database (Neon)
 
 1. Buat project di [Neon](https://neon.tech)
 2. Copy connection string ke `DATABASE_URL`
