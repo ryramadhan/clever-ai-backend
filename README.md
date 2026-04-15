@@ -1,6 +1,6 @@
-# 🖤 MoodWrite AI Backend
+# 🤖 MoodWrite AI Backend
 
-REST API untuk AI Mood Caption Generator. Generate caption aesthetic berdasarkan mood dengan AI (Google Gemini) + fallback mock, simpan ke PostgreSQL.
+REST API untuk AI Assistant. Terima pertanyaan konteks dari user, generate respons dengan AI (Google Gemini) + fallback mock berbasis keyword, simpan history ke PostgreSQL.
 
 ## 🧰 Tech Stack
 
@@ -17,30 +17,29 @@ REST API untuk AI Mood Caption Generator. Generate caption aesthetic berdasarkan
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/health` | Health check |
-| POST | `/api/generate` | Generate caption (rate limited: 20/min) |
-| GET | `/api/captions?limit=20&offset=0` | List caption history |
+| POST | `/api/generate` | Generate AI response (rate limited: 20/min) |
+| GET | `/api/captions?limit=20&offset=0` | List question history |
 
 ### POST /api/generate
 
 **Request:**
 ```json
 {
-  "mood": "malam",
-  "text": "tentang kehilangan"
+  "context": "Bagaimana cara mengatasi stres kerja?"
 }
 ```
 
 **Response:**
 ```json
 {
-  "result": "Malam selalu tahu cara menenangkan...",
+  "result": "Stres kerja bisa diatasi dengan teknik relaksasi...",
   "provider": "gemini",
-  "mood": "malam",
+  "context": "Bagaimana cara mengatasi stres kerja?",
   "latency": 1200
 }
 ```
 
-**Supported moods:** `sunyi`, `malam`, `nostalgia`, `kehilangan`, `tenang`
+**Note:** Jika Gemini quota habis, otomatis fallback ke mock response berbasis 80+ keyword.
 
 ## 🚀 Setup Local
 
@@ -125,9 +124,9 @@ AI_FALLBACK_MOCK=true
 ## ✨ Features
 
 - **Rate limiting:** 20 requests/minute per endpoint
-- **AI fallback:** Auto-switch ke mock captions jika Gemini quota habis
+- **AI fallback:** Auto-switch ke mock response (80+ keyword) jika Gemini quota habis
 - **Multi-model retry:** Fallback antar model Gemini jika error
-- **Input validation:** Strict mood validation + sanitization
+- **Input validation:** Sanitasi context input + rate limiting
 - **Security:** Helmet, CORS, SSL-ready PostgreSQL
 
 ## 📁 Project Structure
@@ -144,4 +143,4 @@ sql/
 
 ## 🔗 Related
 
-- [moodwrite-ai-frontend](https://github.com/ryramadhan/moodwrite-ai-frontend) — React frontend
+- [moodwrite-ai-frontend](https://github.com/ryramadhan/moodwrite-ai-frontend) — React AI Assistant frontend
