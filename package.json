@@ -17,7 +17,7 @@
   "license": "ISC",
   "description": "MoodWrite AI Backend API - Express + PostgreSQL + Gemini AI",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
+    "@google/genai": "^0.7.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

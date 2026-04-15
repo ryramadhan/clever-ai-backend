@@ -1,4 +1,4 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 const { SYSTEM_PROMPT, buildUserPrompt } = require("./prompt");
 
 function getGeminiClient() {
@@ -8,7 +8,7 @@ function getGeminiClient() {
     err.statusCode = 500;
     throw err;
   }
-  return new GoogleGenerativeAI(apiKey);
+  return new GoogleGenAI({ apiKey });
 }
 
 async function generateCaptionWithGemini({ context }) {
@@ -26,25 +26,17 @@ async function generateCaptionWithGemini({ context }) {
 
     for (const modelName of candidateModels) {
       try {
-        const model = genAI.getGenerativeModel({
+        const result = await genAI.models.generateContent({
           model: modelName,
           systemInstruction: SYSTEM_PROMPT,
-        });
-
-        const result = await model.generateContent({
-          contents: [
-            {
-              role: "user",
-              parts: [{ text: buildUserPrompt({ context }) }],
-            },
-          ],
-          generationConfig: {
+          contents: buildUserPrompt({ context }),
+          config: {
             temperature: 0.7,
             maxOutputTokens: 500,
           },
         });
 
-        const outputText = result?.response?.text?.().trim?.() || "";
+        const outputText = result?.text?.trim?.() || "";
         if (!outputText) {
           const err = new Error("Gemini returned empty output");
           err.statusCode = 502;
