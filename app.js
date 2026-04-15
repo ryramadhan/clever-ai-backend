@@ -3,11 +3,9 @@ const cors = require("cors");
 const helmet = require("helmet");
 require("dotenv").config();
 
-// Strict env validation at startup
 const requiredEnv = ["GEMINI_API_KEY"];
 const missing = requiredEnv.filter((key) => !process.env[key]);
 if (missing.length > 0) {
-  // eslint-disable-next-line no-console
   console.error(`[FATAL] Missing required environment variables: ${missing.join(", ")}`);
   process.exit(1);
 }
@@ -19,7 +17,25 @@ app.use(
     crossOriginResourcePolicy: false,
   })
 );
-app.use(cors());
+
+// CORS whitelist
+const ALLOWED_ORIGINS = [
+  "https://clever-ai-chat.vercel.app",
+  "https://clever-ai.vercel.app",
+  "http://localhost:5173",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error(`Origin not allowed: ${origin}`));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/", (_req, res) => {
@@ -44,7 +60,6 @@ const apiRoutes = require("./src/routes/generateRoutes");
 app.use("/api", apiRoutes);
 
 // Centralized error handler
-// eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
   const statusCode =
     typeof err.statusCode === "number" ? err.statusCode : 500;
