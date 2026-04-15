@@ -143,4 +143,4 @@ sql/
 
 ## 🔗 Related
 
-- [moodwrite-ai-frontend](https://github.com/ryramadhan/moodwrite-ai-frontend) — React AI Assistant frontend
+- [clever-ai-frontend](https://github.com/ryramadhan/clever-ai-frontend) — React AI Assistant frontend
