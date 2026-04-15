@@ -92,6 +92,29 @@ const ID_RESPONSES = {
   transport: "Transportasi umum mengurangi kemacetan dan polusi. Rencanakan perjalanan dengan cek rute dan jadwal terlebih dahulu. Selalu prioritaskan keselamatan di jalan.",
   liburan: "Liburan penting untuk recharge dan mendapat perspektif baru. Rencanakan dengan matang, tapi sisakan ruang untuk spontanitas. Dokumentasikan momen indahnya.",
   kado: "Memberi kado adalah ekspresi perhatian. Pilih sesuatu yang personal dan sesuai minat penerima. Bukan tentang harga, melainkan pemikiran di baliknya.",
+  
+  // Topik Umum Tambahan
+  waktu: "Manajemen waktu adalah keterampilan penting. Gunakan teknik time-blocking, prioritaskan tugas berdasarkan urgensi dan kepentingan, dan hindari multitasking yang justru menurunkan efisiensi.",
+  skill: "Pengembangan skill membutuhkan 10.000 jam latihan yang terstruktur. Fokus pada deliberate practice: berlatih di zona nyaman Anda, dapatkan feedback, dan perbaiki kelemahan secara spesifik.",
+  komunikasi: "Komunikasi efektif melibatkan mendengarkan aktif, berbicara dengan jelas dan singkat, dan memperhatikan bahasa tubuh. Empati adalah fondasi komunikasi yang bermakna.",
+  networking: "Membangun networking profesional dimulai dari memberi nilai lebih dulu. Hadir di event industri, gunakan LinkedIn dengan bijak, dan jaga relasi dengan follow-up yang tulus.",
+  presentasi: "Presentasi yang baik dimulai dari persiapan matang. Kenali audiens Anda, struktur konten dengan jelas, gunakan visual minimalis, dan latih delivery hingga percaya diri.",
+  memasak: "Memasak adalah keterampilan hidup yang berharga. Mulai dengan resep sederhana, investasi pada peralatan dasar berkualitas, dan jangan takut eksperimen dengan bumbu.",
+  kopi: "Kopi yang nikmat membutuhkan perhatian pada biji berkualitas, grind size yang tepat, suhu air 90-96°C, dan ratio 1:15. Eksplorasi metode brewing manual untuk pengalaman berbeda.",
+  membaca: "Kebiasaan membaca membuka wawasan dan meningkatkan fokus. Tetapkan target realistis, pilih buku sesuai minat, dan gunakan teknik skimming untuk buku non-fiksi.",
+  menulis: "Menulis adalah keterampilan yang diasah dengan latihan rutin. Tulis setiap hari meski sedikit, fokus pada clarity bukan perfection, dan baca karya penulis hebat sebagai inspirasi.",
+  musik: "Musik memiliki efek terapeutik yang terbukti secara ilmiah. Eksplor berbagai genre, coba belajar alat musik, atau gunakan playlist untuk berbagai aktivitas dan mood.",
+  film: "Film adalah medium storytelling yang powerful. Selain hiburan, analisis struktur narasi dan teknik sinematik bisa mengasah apresiasi dan pemahaman visual.",
+  fotografi: "Fotografi memadukan teknis dan artistry. Kuasai exposure triangle, komposisi rule of thirds, dan cahaya alami. Latih mata untuk melihat moment yang menarik.",
+  traveling: "Traveling mengembangkan empati dan pemahaman budaya. Riset destinasi, respek tradisi lokal, coba kuliner autentik, dan biarkan spontanitas mengarahkan petualangan.",
+  hewan: "Memelihara hewan mengajarkan tanggung jawab dan empati. Pahami kebutuhan spesies, siapkan komitmen jangka panjang, dan pertimbangkan adopsi dari shelter.",
+  tanaman: "Berkebun mengurangi stres dan menghasilkan oksigen. Pilih tanaman sesuai kondisi cahaya rumah, atur jadwal penyiraman, dan nikmati proses pertumbuhannya.",
+  minimalis: "Gaya hidup minimalis bukan tentang membuang segalanya, melainkan menyimpan hanya yang memberi nilai. Mulai dari declutter satu area, tanyakan apakah barang itu dibutuhkan atau disukai.",
+  lingkungan: "Aksi kecil berdampak besar bagi lingkungan. Kurangi plastik sekali pakai, pilah sampah, pilih transportasi ramah lingkungan, dan dukung brand dengan praktik berkelanjutan.",
+  volunteer: "Volunteer memberi makna dan koneksi komunitas. Pilih organisasi yang sejalan dengan nilai Anda, mulai dengan komitmen kecil, dan lihat dampak positif yang terwujud.",
+  hobby: "Hobi penting untuk keseimbangan hidup dan kreativitas. Invest waktu pada aktivitas yang membuat Anda flow, tanpa tekanan untuk sempurna atau menghasilkan.",
+  keamanan: "Keamanan digital mulai dari password kuat yang unik tiap akun, aktifkan two-factor authentication, hati-hati phishing, dan update software secara rutin.",
+  marah: "Saya mengerti Anda merasa marah. Emosi ini adalah respons alami. Cobalah tarik napas dalam-dalam, hitung sampai 10, dan beri diri Anda waktu sejenak sebelum bereaksi.",
 };
 
 function findResponse(context, responses) {
