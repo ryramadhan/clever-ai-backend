@@ -1,4 +1,4 @@
-# 🤖 MoodWrite AI Backend
+# 🤖 Clerver AI Backend
 
 REST API untuk AI Assistant dengan sistem autentikasi lengkap. Terima pertanyaan konteks dari user, generate respons dengan AI (Google Gemini) + fallback mock berbasis keyword, simpan history ke PostgreSQL dengan data separation antar user.
 

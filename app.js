@@ -64,7 +64,12 @@ app.get("/", (_req, res) => {
         me: "GET /api/auth/me",
       },
       generate: "POST /api/generate",
-      history: "GET /api/captions",
+      history: {
+        list: "GET /api/captions",
+        rename: "PATCH /api/captions/:id",
+        pin: "PATCH /api/captions/:id/pin",
+        delete: "DELETE /api/captions/:id",
+      },
     },
     docs: "https://github.com/ryramadhan/moodwrite-ai-backend",
   });
