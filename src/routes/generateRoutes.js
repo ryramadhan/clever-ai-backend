@@ -12,6 +12,7 @@ const {
   pinCaptionController,
   deleteCaptionController
 } = require("../controllers/captionsController");
+const { getStatsController } = require("../controllers/statsController");
 
 const router = express.Router();
 
@@ -36,6 +37,9 @@ router.get("/captions", optionalAuth, asyncHandler(getCaptions));
 router.patch("/captions/:id", authenticateToken, asyncHandler(renameCaptionController));
 router.patch("/captions/:id/pin", authenticateToken, asyncHandler(pinCaptionController));
 router.delete("/captions/:id", authenticateToken, asyncHandler(deleteCaptionController));
+
+// Public stats for social proof
+router.get("/stats", asyncHandler(getStatsController));
 
 module.exports = router;
 

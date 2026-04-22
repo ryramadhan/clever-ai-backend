@@ -3,6 +3,7 @@ const {
   generateCaptionAnyStream,
 } = require("../services/ai");
 const { insertCaption } = require("../services/captionsService");
+const { insertGenerateLog } = require("../services/generateLogService");
 
 function badRequest(message) {
   const err = new Error(message);
@@ -43,6 +44,9 @@ async function generate(req, res) {
       result,
     });
   }
+
+  // Non-blocking: log generation duration for stats
+  insertGenerateLog(latency).catch(() => { });
 
   res.json({
     result,
@@ -109,6 +113,9 @@ async function generateStream(req, res) {
         result: fullResult,
       });
     }
+
+    // Non-blocking: log generation duration for stats
+    insertGenerateLog(latency).catch(() => { });
 
     res.end();
   } catch (err) {

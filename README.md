@@ -35,6 +35,7 @@ REST API untuk AI Assistant dengan sistem autentikasi lengkap. Terima pertanyaan
 | POST | `/api/generate/stream` | **SSE Streaming** - Generate AI response with real-time streaming (rate limited: 20/min). Uses Server-Sent Events for chunk-by-chunk delivery |
 | POST | `/api/generate` | Legacy non-streaming endpoint (rate limited: 20/min). Returns full response at once |
 | GET | `/api/captions?limit=20&offset=0` | List history. Guest: only global data (user_id IS NULL). Auth: only own data |
+| GET | `/api/stats` | Public stats for social proof: total generated results, avg response time, total users |
 
 ### POST /api/auth/register
 
@@ -346,6 +347,41 @@ GEMINI_MODEL=gemini-1.5-flash-latest
    psql "$DATABASE_URL" -f sql/schema.sql
    ```
 
+##  Stats API Implementation
+
+### Endpoint
+
+```
+GET /api/stats
+```
+
+### Response
+
+```json
+{
+  "totalGenerated": 1250,
+  "avgGenerateTime": 2450,
+  "totalUsers": 150
+}
+```
+
+### Data Sources
+
+| Field | Source | Description |
+|-------|--------|-------------|
+| `totalGenerated` | `COUNT(*) FROM captions` | Total AI responses generated |
+| `avgGenerateTime` | `AVG(duration_ms) FROM generate_logs` (last 7 days) | Average response time in ms |
+| `totalUsers` | `COUNT(*) FROM users` | Total registered users |
+
+### Non-blocking Logging
+
+Generation duration is logged asynchronously without affecting response time:
+
+```javascript
+// In generateController.js
+insertGenerateLog(latency).catch(() => {}); // Fire and forget
+```
+
 ## 🏗️ Architecture
 
 ### System Overview
@@ -391,18 +427,33 @@ Global Data                   Private Data Only
 - **Authentication:** JWT-based auth (7d expiry), Google OAuth, password reset
 - **Data Separation:** Strict isolation - guests see global data, users see only their data
 - **Streaming Fallback:** Mock data juga di-stream (word-by-word) untuk UX konsisten
+- **Live Stats API:** Public endpoint untuk social proof (total generated, avg response time, total users)
+- **Analytics Logging:** Non-blocking generation duration tracking untuk performance metrics
 
 ## 📁 Project Structure
 
 ```
 src/
-├── controllers/     # Request handlers
-├── routes/          # Route definitions + middleware
-├── services/        # Business logic (AI, DB, captions, auth)
-├── middleware/      # Auth middleware
-├── utils/           # Helpers (asyncHandler)
+├── controllers/         # Request handlers
+│   ├── authController.js
+│   ├── captionsController.js
+│   ├── generateController.js    # SSE streaming + duration logging
+│   └── statsController.js       # Public stats endpoint
+├── routes/              # Route definitions + middleware
+├── services/            # Business logic
+│   ├── ai.js
+│   ├── authService.js
+│   ├── captionsService.js
+│   ├── db.js
+│   ├── generateLogService.js    # Analytics logging
+│   └── statsService.js          # Stats aggregation
+├── middleware/          # Auth middleware
+└── utils/               # Helpers (asyncHandler)
 sql/
-└── schema.sql       # Database schema
+├── schema.sql                    # Initial schema
+├── migration_add_title_and_pin.sql
+├── migration_add_picture.sql
+└── migration_generate_logs.sql   # Analytics table
 ```
 
 ## 🔗 Related
