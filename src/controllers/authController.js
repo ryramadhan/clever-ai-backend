@@ -13,7 +13,6 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 // Initialize Google OAuth client
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-// Register
 async function register(req, res) {
   const { name, email, password } = req.body ?? {};
 
@@ -27,7 +26,6 @@ async function register(req, res) {
   });
 }
 
-// Login
 async function login(req, res) {
   const { email, password } = req.body ?? {};
 
@@ -41,7 +39,6 @@ async function login(req, res) {
   });
 }
 
-// Get current user
 async function getMe(req, res) {
   const userId = req.userId;
   const user = await findUserById(userId);
@@ -58,12 +55,13 @@ async function getMe(req, res) {
       id: user.id,
       name: user.name,
       email: user.email,
+      picture: user.picture,
       createdAt: user.created_at,
     },
   });
 }
 
-// Google Login - Verify ID Token (for popup-based flow)
+// Google Login - Verify ID Token
 async function googleLogin(req, res) {
   if (!GOOGLE_CLIENT_ID) {
     const err = new Error("Google OAuth not configured");
@@ -86,7 +84,7 @@ async function googleLogin(req, res) {
   });
 
   const payload = ticket.getPayload();
-  const { sub: googleId, email, name } = payload;
+  const { sub: googleId, email, name, picture } = payload;
 
   if (!email) {
     const err = new Error("Email not available from Google");
@@ -94,11 +92,11 @@ async function googleLogin(req, res) {
     throw err;
   }
 
-  // Find or create user
   const { user, token, isNew } = await findOrCreateGoogleUser({
     googleId,
     email,
     name: name || email.split("@")[0],
+    picture,
   });
 
   res.status(isNew ? 201 : 200).json({
@@ -109,7 +107,6 @@ async function googleLogin(req, res) {
   });
 }
 
-// Forgot Password
 async function forgotPassword(req, res) {
   const { email } = req.body ?? {};
 
@@ -121,10 +118,6 @@ async function forgotPassword(req, res) {
 
   const result = await generateResetToken(email);
 
-  // TODO: Send email with reset link
-  // For now, return the token (in production, send via email)
-  // In production: sendEmail({ to: email, resetToken: result.resetToken })
-
   res.json({
     success: true,
     message: "If email exists, password reset instructions have been sent",
@@ -135,7 +128,6 @@ async function forgotPassword(req, res) {
   });
 }
 
-// Reset Password
 async function resetPasswordHandler(req, res) {
   const { token, newPassword } = req.body ?? {};
 

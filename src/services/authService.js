@@ -45,7 +45,6 @@ function verifyToken(token) {
   }
 }
 
-// Register new user
 async function registerUser({ name, email, password }) {
   // Validate input
   if (!name || !email || !password) {
@@ -56,22 +55,18 @@ async function registerUser({ name, email, password }) {
     throw createError("Password must be at least 6 characters");
   }
 
-  // Email format validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     throw createError("Invalid email format");
   }
 
-  // Check if email exists
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
     throw createError("Email already registered", 409);
   }
 
-  // Hash password
   const hashedPassword = await hashPassword(password);
 
-  // Insert user
   const { rows } = await query(
     `INSERT INTO users (name, email, password)
      VALUES ($1, $2, $3)
@@ -87,13 +82,13 @@ async function registerUser({ name, email, password }) {
       id: user.id,
       name: user.name,
       email: user.email,
+      picture: user.picture,
       createdAt: user.created_at,
     },
     token,
   };
 }
 
-// Login user
 async function loginUser({ email, password }) {
   if (!email || !password) {
     throw createError("Email and password are required");
@@ -123,16 +118,16 @@ async function loginUser({ email, password }) {
       id: user.id,
       name: user.name,
       email: user.email,
+      picture: user.picture,
       createdAt: user.created_at,
     },
     token,
   };
 }
 
-// Find user by email
 async function findUserByEmail(email) {
   const { rows } = await query(
-    `SELECT id, name, email, password, google_id, created_at
+    `SELECT id, name, email, password, google_id, picture, created_at
      FROM users
      WHERE email = $1`,
     [email.toLowerCase().trim()]
@@ -140,10 +135,9 @@ async function findUserByEmail(email) {
   return rows[0] || null;
 }
 
-// Find user by ID
 async function findUserById(userId) {
   const { rows } = await query(
-    `SELECT id, name, email, created_at
+    `SELECT id, name, email, picture, created_at
      FROM users
      WHERE id = $1`,
     [userId]
@@ -151,11 +145,10 @@ async function findUserById(userId) {
   return rows[0] || null;
 }
 
-// Find or create Google user
-async function findOrCreateGoogleUser({ googleId, email, name }) {
+async function findOrCreateGoogleUser({ googleId, email, name, picture }) {
   // Try to find by google_id first
   let { rows } = await query(
-    `SELECT id, name, email, google_id, created_at
+    `SELECT id, name, email, google_id, picture, created_at
      FROM users
      WHERE google_id = $1`,
     [googleId]
@@ -169,6 +162,7 @@ async function findOrCreateGoogleUser({ googleId, email, name }) {
         id: user.id,
         name: user.name,
         email: user.email,
+        picture: user.picture,
         createdAt: user.created_at,
       },
       token,
@@ -176,20 +170,18 @@ async function findOrCreateGoogleUser({ googleId, email, name }) {
     };
   }
 
-  // Try to find by email and link Google account
   ({ rows } = await query(
-    `SELECT id, name, email, created_at
+    `SELECT id, name, email, picture, created_at
      FROM users
      WHERE email = $1`,
     [email.toLowerCase().trim()]
   ));
 
   if (rows[0]) {
-    // Link Google ID to existing account
     const user = rows[0];
     await query(
-      `UPDATE users SET google_id = $1 WHERE id = $2`,
-      [googleId, user.id]
+      `UPDATE users SET google_id = $1, picture = COALESCE($2, picture) WHERE id = $3`,
+      [googleId, picture, user.id]
     );
 
     const token = generateToken(user.id);
@@ -198,6 +190,7 @@ async function findOrCreateGoogleUser({ googleId, email, name }) {
         id: user.id,
         name: user.name,
         email: user.email,
+        picture: picture || user.picture,
         createdAt: user.created_at,
       },
       token,
@@ -205,12 +198,11 @@ async function findOrCreateGoogleUser({ googleId, email, name }) {
     };
   }
 
-  // Create new user
   ({ rows } = await query(
-    `INSERT INTO users (name, email, google_id)
-     VALUES ($1, $2, $3)
-     RETURNING id, name, email, created_at`,
-    [name.trim(), email.toLowerCase().trim(), googleId]
+    `INSERT INTO users (name, email, google_id, picture)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, name, email, picture, created_at`,
+    [name.trim(), email.toLowerCase().trim(), googleId, picture]
   ));
 
   const newUser = rows[0];
@@ -221,6 +213,7 @@ async function findOrCreateGoogleUser({ googleId, email, name }) {
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,
+      picture: newUser.picture,
       createdAt: newUser.created_at,
     },
     token,
@@ -240,7 +233,6 @@ async function generateResetToken(email) {
   const resetToken = crypto.randomUUID();
   const expiry = new Date(Date.now() + RESET_TOKEN_EXPIRY_MINUTES * 60 * 1000);
 
-  // Save to database
   await query(
     `UPDATE users
      SET reset_token = $1, reset_token_expiry = $2
@@ -256,7 +248,6 @@ async function generateResetToken(email) {
   };
 }
 
-// Verify reset token
 async function verifyResetToken(token) {
   const { rows } = await query(
     `SELECT id, email, reset_token_expiry
@@ -273,7 +264,6 @@ async function verifyResetToken(token) {
   return rows[0];
 }
 
-// Reset password
 async function resetPassword({ token, newPassword }) {
   if (!newPassword || newPassword.length < 6) {
     throw createError("Password must be at least 6 characters");
@@ -281,7 +271,6 @@ async function resetPassword({ token, newPassword }) {
 
   const user = await verifyResetToken(token);
 
-  // Hash new password
   const hashedPassword = await hashPassword(newPassword);
 
   // Update password and clear reset token
